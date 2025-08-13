@@ -95,7 +95,7 @@ func main() {
 		attr      = flag.String("attr", "", "attribute to query")
 		dir       = flag.String("dir", ".", "output directory")
 		verbose   = flag.Bool("verbose", false, "verbose output")
-		overwrite = flag.Bool("overwrite", true, "overwrite files that already exist (will be skipped otherwise)")
+		overwrite = flag.Bool("overwrite", false, "overwrite files that already exist (will be skipped otherwise)")
 	)
 
 	flag.Usage = usage
@@ -171,14 +171,18 @@ func main() {
 			assetURL = base.ResolveReference(assetURL)
 			path := filepath.Join(*dir, filepath.Base(assetURL.Path))
 
-			if !*overwrite {
-				if _, err := os.Stat(path); err == nil {
+			if _, err := os.Stat(path); err == nil {
+				if !*overwrite {
 					log.Warn().
 						Int("job", jobID).
 						Str("url", assetURL.String()).
 						Msg("skipping existing file")
 					return
 				}
+				log.Warn().
+					Int("job", jobID).
+					Str("url", assetURL.String()).
+					Msg("overwriting existing file")
 			}
 
 			log.Info().
