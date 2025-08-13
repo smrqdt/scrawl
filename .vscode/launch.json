@@ -12,10 +12,25 @@
       "program": "${fileDirname}",
       "args": [
         "-verbose",
-        "-dir", "./test", "-attr", "href",
+        "-dir",
+        "./test",
+        "-attr",
+        "href",
         "https://www.berlin.de/landesverwaltungsamt/logistikservice/amtsblatt-fuer-berlin/",
         "[download]"
       ]
-    }
+    },
+    {
+      "name": "Launch Package Fail",
+      "type": "go",
+      "request": "launch",
+      "mode": "auto",
+      "program": "${fileDirname}",
+      "args": [
+        "-verbose",
+        "http://httpbin.org/status/404",
+        "[download]"
+      ]
+    },
   ]
 }
