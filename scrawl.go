@@ -36,15 +36,28 @@ func scrape(url *url.URL, css, attr string) ([]string, error) {
 
 	var assets []string
 	doc.Find(css).Each(func(index int, sel *goquery.Selection) {
-		asset := sel.Text()
-		if len(attr) > 0 {
-			asset, _ = sel.Attr(attr)
+		selHTML, _ := goquery.OuterHtml(sel)
+		target := sel.Text()
+		if attr != "" {
+			var ok bool
+			target, ok = sel.Attr(attr)
+			if !ok {
+				log.Debug().
+					Str("selection", selHTML).
+					Str("attr", attr).
+					Msg("attribute not found on element")
+			}
 		}
 
-		asset = strings.TrimSpace(asset)
-		if len(asset) > 0 {
-			assets = append(assets, asset)
+		target = strings.TrimSpace(target)
+		if target == "" {
+
+			log.Debug().
+				Str("selection", selHTML).
+				Str("attr", attr).
+				Msg("target is empty")
 		}
+		assets = append(assets, target)
 	})
 
 	return assets, nil
@@ -85,8 +98,8 @@ func export(path string, r io.Reader) error {
 }
 
 func usage() {
-	fmt.Fprintf(os.Stderr, "Usage: %s [options] url selector\n", path.Base(os.Args[0]))
-	fmt.Fprintln(os.Stderr, "Parameters:")
+	fmt.Fprintf(os.Stderr, "Usage: %s [options] <url> <selector>\n", path.Base(os.Args[0]))
+	fmt.Fprintln(os.Stderr, "Options:")
 	flag.PrintDefaults()
 }
 
