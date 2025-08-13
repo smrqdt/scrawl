@@ -12,7 +12,9 @@
 *.so
 *.dylib
 scrawl
-build/
+
+# Added by goreleaser init:
+dist/
 
 # Test binary, built with `go test -c`
 *.test
